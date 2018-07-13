@@ -53,7 +53,6 @@ trainer.extend(extensions.Evaluator(test_iter, model, device = None))
 trainer.extend(extensions.ProgressBar())
 
 # 教師データとテスト用データの正解率を表示する
-# 起動しない、要チェック
 trainer.extend(extensions.LogReport(),
 trainer.extend(extensions.PrintReport( entries=['epoch', 'main/accuracy', 'validation/main/accuracy', 'elapsed_time' ])))
 
