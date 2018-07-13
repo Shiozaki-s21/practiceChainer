@@ -36,7 +36,7 @@ model = NMINT_Conv_NN()
 image = Image.open('test/mnist-0.png').convert('L')
 
 #ニューラルネットワークの入力に合わせて成形する
-pixels = np.asarray(image).astype(np.float32_float32).reshape(1, 1, 28, 28)
+pixels = np.asarray(image).astype(np.float).reshape(1, 1, 28, 28)
 pixels = pixels / 255
 
 #ニューラルネットワークを実行する
