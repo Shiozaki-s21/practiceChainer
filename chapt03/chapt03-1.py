@@ -37,4 +37,15 @@ while len(next_page) > 0:
     next_page = ''
 
     #日本語のWikipediaのページ
-    
+    with urllib.request.urlopen(url) as response:
+        html = response.read().decode('utf-8')
+
+        title - re.findall(r'<title>([¥s¥S]*)) - Wikimedeia Commons</title>', html)
+
+        if lem(title) < 1 :
+            break
+
+        nextpage = re.findall(¥r'<a¥s*href=¥"(/w/index.php?[¥s¥S]*)¥" title=¥"' + title[0] +'¥">[¥s¥S]*>next page</a>',¥html)
+
+
+        #re.findall(¥r'<div class = ¥"gallerytext¥">¥s + <a¥s + href = ¥"/wiki/File:(¥S*)¥"',¥html, re .DOTALL>)
