@@ -74,7 +74,8 @@ while len(next_page) > 0:
                     if face.endswith('.tif') or face.endswith('.tiff'):
                         os.system('gdal_translate -of JPEG -ot Byte -co QUALITY=100 portrait/'+face+' portrait/'+face+'.jpg')
                         os.remove('portrait/' + face)
-                        os.remove('portrait/' + face + '.jpg.aux.xml')
+                        #TODO JPGに変換したあと何を消すためにこのコマンドを追加しているのか
+                        #os.remove('portrait/' + face + '.jpg.aux.xml')
 
         #次のページのURLを作る
         if len(nextpage) > 0:
@@ -93,8 +94,8 @@ while len(next_page) > 0:
             #上部中央の顔付近を切り出す
             w = img.size[0] / 2
             x = img.size[0] / 4
-            img = img.crop((x, 0, x + w, w).resize(320, 320))
-
+            img = img.crop((x, 0, x + w, w)).resize((320, 320))
+        
             #名前をつけて保存する
             img.save('train/' + str(numimg) + '.png')
             numimg = numimg + 1
