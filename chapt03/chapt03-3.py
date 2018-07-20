@@ -61,7 +61,7 @@ if len(sys.argv) >= 2:
     in_file = str(sys.argv[1])
 
 # 出力ファイル
-dest_file = 'dest_file'
+dest_file = 'dest.png'
 if len(sys.argv) >= 3:
     dest_file = str(sys.argv[2])
 
@@ -73,9 +73,9 @@ org_w = w = img.size[0]
 org_h = h = img.size[1]
 
 if w % 16 != 0:
-    w - (math.floor(w / 16) + 1) * 16
+    w = (math.floor(w / 16) + 1) * 16
 if h % 16 != 0:
-    h - (math.floor(w / 16) + 1) * 16
+    h = (math.floor(h / 16) + 1) * 16
 if w != img.size[0] or h != img.size[1]:
     img = img.resize((w, h))
 
@@ -84,33 +84,33 @@ if w != img.size[0] or h != img.size[1]:
 dst = Image.new('YCbCr', (10 * w // 4, 10 * h // 4), 'white')
 
 # 入力画像を分割
-cur_x = 10
+cur_x = 0
 while cur_x <= img.size[0] - 16:
     cur_y = 0
+    while cur_y <= img.size[1] - 16:
+        # 画像から切り出し
+        rect = (cur_x, cur_y, cur_x + 16, cur_y + 16)
+        cropimg = img.crop(rect)
+        # YCbCrのY要素のみを使用する
+        hpix = np.array(cropimg, dtype = np.float32)
+        hpix = hpix[:,:,0] / 255
+        x = np.array([[hpix]], dtype = np.float32)
+        # 超画像を実行
+        t = model(x, train = False)
+        # YCbCrのCbCrはBICUBEで拡大
+        dstimg = cropimg.resize((40, 40), Image.BICUBIC)
+        hpix = np.array(dstimg, dtype = np.float32)
+        # YCbCrのY画素をコピー
+        hpix.flags.writeable = True
+        hpix[:,:,0] = t.data[0] * 255
 
-while cur_y <= img.size[1] - 16:
-    # 画像から切り出し
-    rect = (cur_x, cur_y, cur_x + 16, cur_y + 16)
-    cropimg = img.crop(rect)
-    # YCbCrのY要素のみを使用する
-    hpix = cp.array(cropimg, dtype = np.float32)
-    hpix = hpix[:,:,0] / 255
-    # 超画像を実行
-    t = mode(x, trai = False)
-    # YCbCrのCbCrはBICUBEで拡大
-    dstimg = cropimg.resize((40, 40), Image.BICUBIC)
-    hpix = np.array(dstimg, dtype = np.float32)
-    # YCbCrのY画素をコピー
-    hpix.flags.writeable = True
-    hpix[:,:,0] = t.data[0] * 255
-
-    # 画像を結果に配置
-    bytes = np.array(hpix.clip(0, 255), dtype = np.uint8)
-    himg = Image.fromarray(bytes, 'YCbCr')
-    dst.paste(himg, (10 * cur_x // 4, 10 * cur_y // 4, 10* cur_x + 40, 10 * cur_y // 4 + 40))
-    # 次の切り出し先へ
-    cur_y += 16
-cur_x += 16
+        # 画像を結果に配置
+        bytes = np.array(hpix.clip(0, 255), dtype = np.uint8)
+        himg = Image.fromarray(bytes, 'YCbCr')
+        dst.paste(himg, (10 * cur_x // 4, 10 * cur_y // 4, 10 * cur_x // 4 + 40, 10 * cur_y // 4 + 40))
+        # 次の切り出し先へ
+        cur_y += 16
+    cur_x += 16
 
 # 結果の保存
 dst = dst.convert('RGB')
