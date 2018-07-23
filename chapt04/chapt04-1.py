@@ -24,11 +24,11 @@ class DCGAN_Discriminator_NN(chainer.Chain):
         with self.init_scope():
             self.c0_0 = links.Convolution2D(3, neuron_size // 8, 3, 1, 1, initialW = w)
             self.c0_1 = links.Convolution2D(neuron_size // 8, neuron_size // 4, 4, 2, 1, initialW = w)
-            self.c1_0 = links.Convolution2D(neuron_size // 4, neuron_size // 4, 3, 2, 1, initialW = w)
+            self.c1_0 = links.Convolution2D(neuron_size // 4, neuron_size // 4, 3, 1, 1, initialW = w)
             self.c1_1 = links.Convolution2D(neuron_size // 4, neuron_size // 2, 4, 2, 1, initialW = w)
-            self.c2_0 = links.Convolution2D(neuron_size // 2, neuron_size // 2, 4, 2, 1, initialW = w)
-            self.c2_1 = links.Convolution2D(neuron_size // 2, neuron_size // 2, 3, 1, 1, initialW = w)
-            self.c3_0 = links.Convolution2D(neuron_size // 2, neuron_size, 4, 2, 1, initialW = w)
+            self.c2_0 = links.Convolution2D(neuron_size // 2, neuron_size // 2, 3, 1, 1, initialW = w)
+            self.c2_1 = links.Convolution2D(neuron_size // 2, neuron_size, 4, 2, 1, initialW = w)
+            self.c3_0 = links.Convolution2D(neuron_size , neuron_size, 3, 1, 1, initialW = w)
             self.l4 = links.Linear(neuron_size * image_size * image_size // 8 // 8, 1, initialW = w)
             self.bn0_1 = links.BatchNormalization(neuron_size // 4, use_gamma = False)
             self.bn1_0 = links.BatchNormalization(neuron_size // 4, use_gamma = False)
@@ -38,13 +38,13 @@ class DCGAN_Discriminator_NN(chainer.Chain):
             self.bn3_0 = links.BatchNormalization(neuron_size, use_gamma = False)
 
     def __call__(self, x):
-        h = func.leaky_relu(self.c0_0,(x))
+        h = func.leaky_relu(self.c0_0(x))
         h = func.dropout(func.leaky_relu(self.bn0_1(self.c0_1(h))), ratio = 0.2)
         h = func.dropout(func.leaky_relu(self.bn1_0(self.c1_0(h))), ratio = 0.2)
         h = func.dropout(func.leaky_relu(self.bn1_1(self.c1_1(h))), ratio = 0.2)
         h = func.dropout(func.leaky_relu(self.bn2_0(self.c2_0(h))), ratio = 0.2)
         h = func.dropout(func.leaky_relu(self.bn2_1(self.c2_1(h))), ratio = 0.2)
-        h = funt.dropout(func.leaky_relu(self.bn3_0(self.c3_0(h))), ratio = 0.2)
+        h = func.dropout(func.leaky_relu(self.bn3_0(self.c3_0(h))), ratio = 0.2)
         return self.l4(h)
 
 
