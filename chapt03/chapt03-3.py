@@ -80,7 +80,7 @@ if w != img.size[0] or h != img.size[1]:
     img = img.resize((w, h))
 
 
-# 出力画像　
+# 出力画像
 dst = Image.new('YCbCr', (10 * w // 4, 10 * h // 4), 'white')
 
 # 入力画像を分割
